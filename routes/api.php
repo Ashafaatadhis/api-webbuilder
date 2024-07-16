@@ -1,0 +1,65 @@
+<?php
+
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CertificationController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\Template\Section\HeroSectionController;
+use App\Http\Controllers\Product\Image\ProductImageController;
+use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\Store\Image\StoreImageController;
+use App\Http\Controllers\Store\StoreController;
+use App\Http\Controllers\Template\Section\CalltoactionSectionController;
+use App\Http\Controllers\Template\Section\FooterSectionController;
+use App\Http\Controllers\Template\Section\HistorySectionController;
+use App\Http\Controllers\Template\Section\StrengthSectionController;
+use App\Http\Controllers\Template\TemplateController;
+use App\Http\Controllers\TestimonialController;
+use App\Models\Template\Section\StrengthSection;
+use Illuminate\Support\Facades\Route;
+
+// Route::get('/user', function (Request $request) {
+//     return $request->user();
+// })->middleware('auth:sanctum');
+
+Route::get("hello", function () {
+    return ["message" => "Halo dek"];
+});
+
+Route::controller(AuthController::class)->prefix("auth")->group(function () {
+    Route::post('register', "register")->name("auth.register");
+    Route::post('login', "login")->name("auth.login");
+    Route::post('refresh-token', "refresh")->name("auth.refresh");
+    Route::get('me', "me")->name("auth.me");
+    Route::delete('logout', "logout")->name("auth.logout");
+});
+
+// Route::resource("stores", StoreController::class)->names(["store" => "store.add", "update" => "store.update"]);
+Route::resource("employees", EmployeeController::class)->names(["store" => "employee.add", "update" => "employee.update"]);
+Route::resource("testimonials", TestimonialController::class)->names(["store" => "testimonial.add", "update" => "testimonial.update"]);
+Route::resource("certifications", CertificationController::class)->names(["store" => "certification.add", "update" => "certification.update"]);
+Route::resource("templates", TemplateController::class)->names(["store" => "template.add", "update" => "template.update"]);
+
+
+Route::prefix("sections")->group(function () {
+    Route::resource("hero", HeroSectionController::class)->names(["store" => "template.section.hero.add", "update" => "template.section.hero.update"]);
+    Route::resource("footer", FooterSectionController::class)->names(["store" => "template.section.footer.add", "update" => "template.section.footer.update"]);
+    Route::resource("calltoaction", CalltoactionSectionController::class)->names(["store" => "template.section.calltoaction.add", "update" => "template.section.calltoaction.update"]);
+    Route::resource("strength", StrengthSectionController::class)->names(["store" => "template.section.strength.add", "update" => "template.section.strength.update"]);
+    Route::resource("history", HistorySectionController::class)->names(["store" => "template.section.history.add", "update" => "template.section.history.update"]);
+});
+
+Route::prefix("stores")->group(function () {
+    Route::resource("image", StoreImageController::class)->names(["store" => "store.image.add", "update" => "store.image.update"]);
+    Route::resource("/", StoreController::class)->names(["store" => "store.add"])->except(["show", "update", 'destroy']);
+    Route::get("{id}", [StoreController::class, "show"]);
+    Route::put("{id}", [StoreController::class, "update"])->name("store.update");
+    Route::delete("{id}", [StoreController::class, "destroy"])->name("store.delete");
+});
+
+Route::prefix("products")->group(function () {
+    Route::resource("image", ProductImageController::class)->names(["store" => "product.image.add", "update" => "product.image.update"]);
+    Route::resource("/", ProductController::class)->names(["store" => "product.add"])->except(["show", "update", 'destroy']);
+    Route::get("{id}", [ProductController::class, "show"]);
+    Route::put("{id}", [ProductController::class, "update"])->name("product.update");
+    Route::delete("{id}", [ProductController::class, "destroy"])->name("product.delete");
+});
