@@ -31,6 +31,7 @@ class CertificationRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'issuer' => 'required|string|max:255',
+            'image' => 'required|file|max:5120',
             'store_id' => 'required|string|exists:stores,id|max:255',
         ];
     }
@@ -39,6 +40,7 @@ class CertificationRequest extends FormRequest
         return [
             'name' => 'nullable|string|max:255',
             'issuer' => 'nullable|string|max:255',
+            'image' => 'nullable|file|max:5120',
             'store_id' => 'nullable|string|exists:stores,id|max:255',
         ];
     }

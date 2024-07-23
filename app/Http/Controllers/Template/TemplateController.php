@@ -25,7 +25,7 @@ class TemplateController extends Controller
      */
     public function index()
     {
-        $template = Template::paginate(10);
+        $template = Template::with(["strengthSection", "heroSection",  "footerSection", "historySection", "calltoactionSection"])->paginate(10);
         $template = new TemplateCollection($template);
         return $this->sendResponse($template, "Successfully get All Data");
     }
@@ -70,7 +70,7 @@ class TemplateController extends Controller
     public function show(string $id)
     {
 
-        $template = Template::find($id);
+        $template = Template::with(["strengthSection", "heroSection",  "footerSection", "historySection", "calltoactionSection"])->find($id);
         if (!$template) {
             return $this->sendError("Not Found", "Template Not found", Response::HTTP_NOT_FOUND);
         }

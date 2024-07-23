@@ -32,11 +32,11 @@ class StoreImageRequest extends FormRequest
     {
 
         return is_array(request("file")) ?  [
-            "file.*" => 'required|file',
+            "file.*" => 'required|file|max:5120',
 
             'store_id' => 'required|string|exists:stores,id|max:255',
         ] : [
-            "file" => 'required|file',
+            "file" => 'required|file|max:5120',
             'store_id' => 'nullable|string|exists:stores,id|max:255',
         ];
     }

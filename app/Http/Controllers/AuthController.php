@@ -74,6 +74,7 @@ class AuthController extends Controller
                 'username' => $request->username,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
+                "role" => "store_owner"
             ]);
             $data = new UserCollection(collect($user));
             return $this->sendResponse(data: $data, message: "Successfully register new User");

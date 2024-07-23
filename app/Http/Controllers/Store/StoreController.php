@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Store;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Store\StoreRequest;
 use App\Http\Resources\Store\StoreCollection;
+use App\Http\Resources\StoreResource;
 use App\Models\Store\Store;
 use App\Models\User;
 
@@ -30,7 +31,7 @@ class StoreController extends Controller
      */
     public function index()
     {
-        $store = Store::paginate(10);
+        $store = Store::with(["storeImages", "template", "products", "certifications", "testimonials", "employees"])->paginate(10);
         $data = new StoreCollection($store);
         return $this->sendResponse(message: "Successfully get All Data", data: $data);
     }
@@ -77,7 +78,7 @@ class StoreController extends Controller
     public function show(string $id)
     {
 
-        $store = Store::find($id);
+        $store = Store::with(["storeImages", "template", "products", "certifications", "testimonials", "employees"])->find($id);
         if (!$store) {
             return $this->sendError("Not Found", "Store Not found", Response::HTTP_NOT_FOUND);
         }
@@ -96,7 +97,7 @@ class StoreController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StoreRequest $request, string $id)
     {
 
         $user = Auth::user();

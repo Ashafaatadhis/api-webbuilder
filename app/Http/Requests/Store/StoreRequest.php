@@ -36,8 +36,11 @@ class StoreRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'description' => 'string|nullable',
+            'instagram' => "string|nullable",
+            'facebook' => "string|nullable",
+            'whatsapp' => "string|nullable",
             'location' => 'required|string|max:255',
-            'logo' => 'required|file|max:255',
+            'logo' => 'required|file|max:5120',
 
         ];
     }
@@ -46,8 +49,11 @@ class StoreRequest extends FormRequest
         return [
             'name' => 'string|nullable|max:255',
             'description' => 'string|nullable',
+            'instagram' => "string|nullable",
+            'facebook' => "string|nullable",
+            'whatsapp' => "string|nullable",
             'location' => 'string|nullable|max:255',
-            'logo' => 'file|nullable|max:255',
+            'logo' => 'file|nullable|max:5120',
         ];
     }
 }

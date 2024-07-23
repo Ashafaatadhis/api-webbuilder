@@ -16,6 +16,9 @@ return new class extends Migration
             $table->string("name");
             $table->string("slug");
             $table->string("description")->nullable();
+            $table->string("instagram")->nullable();
+            $table->string("facebook")->nullable();
+            $table->string("whatsapp")->nullable();
             $table->string("logo");
             $table->string("location");
             $table->foreignUuid('user_id')->constrained(table: "users", column: "id")->onDelete("cascade")

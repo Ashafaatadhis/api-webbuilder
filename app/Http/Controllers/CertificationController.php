@@ -8,6 +8,7 @@ use App\Http\Resources\CertificationCollection;
 use App\Models\Certification;
 use App\Models\Store\Store;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
 
 
@@ -49,8 +50,13 @@ class CertificationController extends Controller
             return $this->sendError("Not Found", "Store Not found", Response::HTTP_NOT_FOUND);
         }
         Gate::authorize('create-store', $store);
+        $result = $this->uploadSingle($request, "certification", 'image');
 
-        $certification = Certification::create($request->all());
+        $data = $request->all();
+
+        $data['image'] = $result->getPathname();
+
+        $certification = Certification::create($data);
 
 
         $data = new CertificationCollection(collect($certification));
@@ -100,11 +106,22 @@ class CertificationController extends Controller
             return $this->sendError("Not Found", "Store Not found", Response::HTTP_NOT_FOUND);
         }
 
+
+
         Gate::authorize('update-store', $store);
 
+        $data = $request->all();
 
+        if ($request->hasFile('image')) {
+            $result = $this->uploadSingle($request, "certification", 'image');
+            File::delete($certification->image);
+            $data['image'] = $result->getPathname();
+        } else {
 
-        $certification = $certification->update($request->all());
+            $data['image'] = $certification->image;
+        }
+
+        $certification = $certification->update($data);
         if (!$certification) {
             return $this->sendError("Bad Request", "Failed Update Data", Response::HTTP_BAD_REQUEST);
         }
@@ -138,7 +155,7 @@ class CertificationController extends Controller
         if (!$certification->delete()) {
             return $this->sendError("Bad Request", "Failed Delete Data", Response::HTTP_BAD_REQUEST);
         }
-
+        File::delete($certification->image);
         return $this->sendResponse(message: "Successfully deleted Data!");
     }
 }

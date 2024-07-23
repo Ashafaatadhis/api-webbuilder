@@ -30,7 +30,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $product = Product::paginate(10);
+        $product = Product::with(["productImages"])->paginate(10);
         $product = new ProductCollection($product);
         return $this->sendResponse($product, "Successfully get All Data");
     }
@@ -75,7 +75,7 @@ class ProductController extends Controller
     public function show(string $id)
     {
 
-        $product = Product::find($id);
+        $product = Product::with(["productImages"])->find($id);
         if (!$product) {
             return $this->sendError("Not Found", "Product Not found", Response::HTTP_NOT_FOUND);
         }

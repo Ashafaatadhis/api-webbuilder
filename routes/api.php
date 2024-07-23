@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Controllers\AdminStoreController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CertificationController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\OwnerStoreController;
 use App\Http\Controllers\Template\Section\HeroSectionController;
 use App\Http\Controllers\Product\Image\ProductImageController;
 use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Store\Image\StoreImageController;
 use App\Http\Controllers\Store\StoreController;
 use App\Http\Controllers\Template\Section\CalltoactionSectionController;
@@ -14,6 +17,7 @@ use App\Http\Controllers\Template\Section\HistorySectionController;
 use App\Http\Controllers\Template\Section\StrengthSectionController;
 use App\Http\Controllers\Template\TemplateController;
 use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\UserController;
 use App\Models\Template\Section\StrengthSection;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +29,15 @@ Route::get("hello", function () {
     return ["message" => "Halo dek"];
 });
 
+Route::get("administrator/stores",  [AdminStoreController::class, "index"]);
+Route::get("store_owner/stores",  [OwnerStoreController::class, "index"]);
+
+
+Route::get("profile", [ProfileController::class, 'index']);
+Route::put("profile/change-password", [ProfileController::class, 'updatePassword'])->name("profile.password.update");
+Route::put("profile/change-info", [ProfileController::class, 'update'])->name("profile.update");
+Route::delete("profile/delete-user", [ProfileController::class, 'destroy'])->name("profile.delete");
+
 Route::controller(AuthController::class)->prefix("auth")->group(function () {
     Route::post('register', "register")->name("auth.register");
     Route::post('login', "login")->name("auth.login");
@@ -34,6 +47,7 @@ Route::controller(AuthController::class)->prefix("auth")->group(function () {
 });
 
 // Route::resource("stores", StoreController::class)->names(["store" => "store.add", "update" => "store.update"]);
+Route::resource("users", UserController::class)->names(["update" => "user.update"]);
 Route::resource("employees", EmployeeController::class)->names(["store" => "employee.add", "update" => "employee.update"]);
 Route::resource("testimonials", TestimonialController::class)->names(["store" => "testimonial.add", "update" => "testimonial.update"]);
 Route::resource("certifications", CertificationController::class)->names(["store" => "certification.add", "update" => "certification.update"]);

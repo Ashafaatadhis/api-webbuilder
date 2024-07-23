@@ -33,10 +33,10 @@ class ProductImageRequest extends FormRequest
         return is_array(request("file")) ?  [
             "file.*" => 'required|file',
 
-            'product_id' => 'required|exists:products,id|string|max:255',
+            'product_id' => 'required|exists:products,id|string|max:5120',
         ] : [
             "file" => 'required|file',
-            'product_id' => 'nullable|exists:products,id|string|max:255',
+            'product_id' => 'nullable|exists:products,id|string|max:5120',
         ];
     }
     protected function updateRule(): array

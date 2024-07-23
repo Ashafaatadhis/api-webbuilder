@@ -15,8 +15,10 @@ return new class extends Migration
             $table->uuid("id")->primary();
             $table->string("name");
             $table->string("position");
+            $table->integer("level");
             $table->foreignUuid('store_id')->constrained(table: "stores", column: "id")->onDelete("cascade")
                 ->onUpdate("cascade");
+            $table->string("image")->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

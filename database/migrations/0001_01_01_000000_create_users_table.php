@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->uuid("id")->primary();
             $table->string('username');
-            $table->string('email')->unique();
+            $table->string('email');
+            $table->string("image")->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable()->default();
+            $table->enum("role", ["administrator", 'store_owner']);
             $table->rememberToken();
+            $table->unique(array("email", "deleted_at"));
             $table->softDeletes();
             $table->timestamps();
         });

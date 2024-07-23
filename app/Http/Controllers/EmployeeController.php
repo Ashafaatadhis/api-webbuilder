@@ -13,7 +13,7 @@ use App\Models\Employee;
 use App\Models\Store\Store;
 
 use Illuminate\Http\Response;
-
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
 
 
@@ -21,7 +21,8 @@ class EmployeeController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ["index", 'show']]);
+        $this->middleware('auth:api', ["except" => "show"]);
+        $this->middleware('role:store_owner', ["except" => "show"]);
     }
 
     /**
@@ -29,7 +30,7 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $employee = Employee::paginate(10);
+        $employee = Employee::orderBy('level', 'asc')->paginate(10);
         $employee = new EmployeeCollection($employee);
         return $this->sendResponse($employee, "Successfully get All Data");
     }
@@ -56,7 +57,14 @@ class EmployeeController extends Controller
         }
         Gate::authorize('create-store', $store);
 
-        $employee = Employee::create($request->all());
+        $result = $this->uploadSingle($request, "employee", 'image');
+
+        $data = $request->all();
+
+        $data['image'] = $result->getPathname();
+
+
+        $employee = Employee::create($data);
 
 
         $data = new EmployeeCollection(collect($employee));
@@ -108,9 +116,17 @@ class EmployeeController extends Controller
 
         Gate::authorize('update-store', $store);
 
+        $data = $request->all();
 
+        if ($request->hasFile('image')) {
+            $result = $this->uploadSingle($request, "employee", 'image');
+            File::delete($employee->image);
+            $data['image'] = $result->getPathname();
+        } else {
+            $data['image'] = $employee->image;
+        }
 
-        $employee = $employee->update($request->all());
+        $employee = $employee->update($data);
         if (!$employee) {
             return $this->sendError("Bad Request", "Failed Update Data", Response::HTTP_BAD_REQUEST);
         }
@@ -144,7 +160,7 @@ class EmployeeController extends Controller
         if (!$employee->delete()) {
             return $this->sendError("Bad Request", "Failed Delete Data", Response::HTTP_BAD_REQUEST);
         }
-
+        File::delete($employee->image);
         return $this->sendResponse(message: "Successfully deleted Data!");
     }
 }
