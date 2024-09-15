@@ -31,7 +31,8 @@ class TemplateLinkController extends Controller
         $template = TemplateLink::with(["heroAboutUsSection", "productSection", "storeLocationSection", "teamSection", "strengthSection", "heroSection",  "footerSection", "historySection", "calltoactionSection"]);
         if ($request->has('search')) {
             $search = $request->query('search');
-            $template->whereHas('stores.products', function ($query) use ($search) {
+            $template->where('name', 'like', '%' . $search . '%'); // Adjust the column name as needed
+            $template->orWhereHas('store.products', function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%');
             });
         }

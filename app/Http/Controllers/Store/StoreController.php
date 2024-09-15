@@ -31,7 +31,7 @@ class StoreController extends Controller
      */
     public function index(StoreRequest $request)
     {
-        $store = Store::with(["storeImages", "template", "products", "products.productImages", "certifications", "testimonials", "employees" => function ($query) {
+        $store = Store::with(["storeImages", "templateLink", "products", "products.productImages", "certifications", "testimonials", "employees" => function ($query) {
             $query->orderBy('level', 'asc');
         }]);
         if ($request->has('search')) {
@@ -87,7 +87,7 @@ class StoreController extends Controller
     public function show(string $id)
     {
 
-        $store = Store::with(["storeImages", "template", "products.productImages", "certifications", "testimonials", "employees" => function ($query) {
+        $store = Store::with(["storeImages", "templateLink", "products.productImages", "certifications", "testimonials", "employees" => function ($query) {
             $query->orderBy('level', 'asc');
         }])->find($id);
         if (!$store) {

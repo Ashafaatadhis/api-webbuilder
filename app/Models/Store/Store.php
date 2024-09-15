@@ -7,6 +7,7 @@ use App\Models\Employee;
 use App\Models\Product\Product;
 use App\Models\Store\Image\StoreImage;
 use App\Models\Template\Template;
+use App\Models\Template\TemplateLink;
 use App\Models\Testimonial;
 use App\Models\User;
 use Cviebrock\EloquentSluggable\Sluggable;
@@ -57,9 +58,9 @@ class Store extends Model
     {
         return $this->hasMany(Employee::class);
     }
-    public function template(): HasOne
+    public function templateLink(): HasOne
     {
-        return $this->hasOne(Template::class);
+        return $this->hasOne(TemplateLink::class);
     }
 
     public function sluggable(): array

@@ -19,7 +19,7 @@ class OwnerStoreController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $store = Store::with(["storeImages", "template", "products", "certifications", "testimonials", "employees"])->where(column: "user_id", operator: "=", value: $user->id)->paginate(10);
+        $store = Store::with(["storeImages", "templateLink", "products", "certifications", "testimonials", "employees"])->where(column: "user_id", operator: "=", value: $user->id)->paginate(10);
         $data = new StoreCollection($store);
         return $this->sendResponse(message: "Successfully get All Data", data: $data);
     }

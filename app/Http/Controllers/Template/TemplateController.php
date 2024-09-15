@@ -30,6 +30,7 @@ class TemplateController extends Controller
         if ($request->has('search')) {
             $search = $request->query('search');
             $template->where('name', 'like', '%' . $search . '%'); // Adjust the column name as needed
+            $template->orWhere("templateCategory_id", $search);
         }
         if ($categoryId) {
             $template->where("templateCategory_id", $categoryId);

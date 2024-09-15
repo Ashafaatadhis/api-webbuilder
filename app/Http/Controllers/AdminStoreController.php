@@ -17,7 +17,7 @@ class AdminStoreController extends Controller
 
     public function index()
     {
-        $store = Store::with(["storeImages", "template", "products", "certifications", "testimonials", "employees"])->paginate(10);
+        $store = Store::with(["storeImages", "templateLink", "products", "certifications", "testimonials", "employees"])->paginate(10);
         $data = new StoreCollection($store);
         return $this->sendResponse(message: "Successfully get All Data", data: $data);
     }
