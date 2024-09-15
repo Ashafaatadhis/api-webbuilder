@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string("url");
             $table->foreignUuid('store_id')->constrained(table: "stores", column: "id")->onDelete("cascade")
                 ->onUpdate("cascade");
-            $table->softDeletes();
+
             $table->timestamps();
         });
     }
@@ -26,9 +26,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('store_image', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
+
         Schema::dropIfExists('store_image');
     }
 };

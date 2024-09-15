@@ -1,20 +1,22 @@
 <?php
 
-namespace App\Http\Controllers\Template\Section;
+namespace App\Http\Controllers\Template;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Template\Section\FooterSectionRequest;
-use App\Http\Resources\Template\SectionCollection;
+
+use App\Http\Requests\Template\TemplateLinkRequest;
+use App\Http\Resources\Template\TemplateCollection;
 use App\Models\Store\Store;
-use App\Models\Template\Section\FooterSection;
-use App\Models\Template\Template;
+
 use App\Models\Template\TemplateLink;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\File;
+
 use Illuminate\Support\Facades\Gate;
 
-class FooterSectionController extends Controller
+
+class TemplateLinkController extends Controller
 {
+
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ["index", 'show']]);
@@ -23,11 +25,28 @@ class FooterSectionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(TemplateLinkRequest $request)
     {
-        $section = FooterSection::paginate(10);
-        $section = new SectionCollection($section);
-        return $this->sendResponse($section, "Successfully get All Data");
+
+        $template = TemplateLink::with(["heroAboutUsSection", "productSection", "storeLocationSection", "teamSection", "strengthSection", "heroSection",  "footerSection", "historySection", "calltoactionSection"]);
+        if ($request->has('search')) {
+            $search = $request->query('search');
+            $template->whereHas('stores.products', function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            });
+        }
+
+
+        if ($request->has('paginate')) {
+            $page = $request->query('paginate');
+            if ($page) {
+                $template = $template->paginate(10);
+            }
+        }
+        $template = $template->get();
+
+        $template = new TemplateCollection($template);
+        return $this->sendResponse($template, "Successfully get All Data");
     }
 
     /**
@@ -41,19 +60,10 @@ class FooterSectionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(FooterSectionRequest $request)
+    public function store(TemplateLinkRequest $request)
     {
 
-
-        $template = TemplateLink::find($request->templateLink_id);
-
-        if (!$template) {
-            return $this->sendError("Not Found", "Template Link Not found", Response::HTTP_NOT_FOUND);
-        }
-
-
-
-        $store = Store::find($template->store_id);
+        $store = Store::find($request->store_id);
 
         if (!$store) {
             return $this->sendError("Not Found", "Store Not found", Response::HTTP_NOT_FOUND);
@@ -62,18 +72,14 @@ class FooterSectionController extends Controller
         Gate::authorize('create-store', $store);
         //  unique store_id
 
-
-        $data = $request->all();
-
-
-        $section = FooterSection::create($data);
+        $template = TemplateLink::create($request->all());
 
         // dd(is_array($request->file('file')) ? count($request->file('file')) : $request->file('file'));
         // $listUpload = $this->uploadMulti($request, $product);
 
         // $product->image = $listUpload;
 
-        $data = new SectionCollection(collect($section));
+        $data = new TemplateCollection(collect($template));
         return $this->sendResponse(data: $data, message: "Successfully create new Data!");
     }
 
@@ -82,13 +88,12 @@ class FooterSectionController extends Controller
      */
     public function show(string $id)
     {
-        $section = FooterSection::find($id);
 
-        if (!$section) {
-            return $this->sendError("Not Found", "Footer Section Not found", Response::HTTP_NOT_FOUND);
+        $template = TemplateLink::with(["heroAboutUsSection", "productSection", "storeLocationSection", "teamSection", "strengthSection", "heroSection",  "footerSection", "historySection", "calltoactionSection"])->find($id);
+        if (!$template) {
+            return $this->sendError("Not Found", "Template Not found", Response::HTTP_NOT_FOUND);
         }
-
-        $data = new SectionCollection(collect($section));
+        $data = new TemplateCollection(collect($template));
         return $this->sendResponse(message: "Successfully get Data", data: $data);
     }
 
@@ -103,17 +108,13 @@ class FooterSectionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(FooterSectionRequest $request, string $id)
+    public function update(TemplateLinkRequest $request, string $id)
     {
 
 
-        $section = FooterSection::find($id);
 
-        if (!$section) {
-            return $this->sendError("Not Found", "Footer Section Not found", Response::HTTP_NOT_FOUND);
-        }
 
-        $template = TemplateLink::find($section->templateLink_id);
+        $template = TemplateLink::find($id);
 
         if (!$template) {
             return $this->sendError("Not Found", "Template Link Not found", Response::HTTP_NOT_FOUND);
@@ -126,17 +127,16 @@ class FooterSectionController extends Controller
         }
 
         Gate::authorize('update-store', $store);
-        $data = $request->all();
 
 
 
-        $section = $section->update($data);
-        if (!$section) {
+        $template = $template->update($request->all());
+        if (!$template) {
             return $this->sendError("Bad Request", "Failed Update Data", Response::HTTP_BAD_REQUEST);
         }
-        $section = FooterSection::where('id', $id)->first();
-        $data = new SectionCollection(collect($section));
-        return $this->sendResponse(data: $data, message: "Successfully updated ffData!");
+        $template = TemplateLink::where('id', $id)->first();
+        $data = new TemplateCollection(collect($template));
+        return $this->sendResponse(data: $data, message: "Successfully updated Data!");
     }
 
     /**
@@ -144,19 +144,12 @@ class FooterSectionController extends Controller
      */
     public function destroy(string $id)
     {
-        $section = FooterSection::find($id);
 
-        if (!$section) {
-            return $this->sendError("Not Found", "Footer Section Not found", Response::HTTP_NOT_FOUND);
-        }
-        $template = TemplateLink::find($section->templateLink_id);
-
+        $template = TemplateLink::find($id);
         if (!$template) {
-            return $this->sendError("Not Found", "Template Link Not found", Response::HTTP_NOT_FOUND);
+            return $this->sendError("Not Found", "Template Not found", Response::HTTP_NOT_FOUND);
         }
-
         $store = Store::find($template->store_id);
-
         if (!$store) {
             return $this->sendError("Not Found", "Store Not found", Response::HTTP_NOT_FOUND);
         }
@@ -164,7 +157,7 @@ class FooterSectionController extends Controller
 
         Gate::authorize('delete-store', $store);
 
-        if (!$section->delete()) {
+        if (!$template->delete()) {
             return $this->sendError("Bad Request", "Failed Delete Data", Response::HTTP_BAD_REQUEST);
         }
 

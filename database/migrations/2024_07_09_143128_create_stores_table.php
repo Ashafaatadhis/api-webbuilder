@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string("location");
             $table->foreignUuid('user_id')->constrained(table: "users", column: "id")->onDelete("cascade")
                 ->onUpdate("cascade");
-            $table->softDeletes();
+
             $table->timestamps();
         });
     }
@@ -33,9 +33,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('stores', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
+
         Schema::dropIfExists('stores');
     }
 };

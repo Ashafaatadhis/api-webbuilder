@@ -8,6 +8,7 @@ use App\Http\Resources\Template\SectionCollection;
 use App\Models\Store\Store;
 use App\Models\Template\Section\StrengthSection;
 use App\Models\Template\Template;
+use App\Models\Template\TemplateLink;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
@@ -45,11 +46,13 @@ class StrengthSectionController extends Controller
 
 
 
-        $template = Template::find($request->template_id);
+        $template = TemplateLink::find($request->templateLink_id);
 
         if (!$template) {
-            return $this->sendError("Not Found", "Template Not found", Response::HTTP_NOT_FOUND);
+            return $this->sendError("Not Found", "Template Link Not found", Response::HTTP_NOT_FOUND);
         }
+
+
 
         $store = Store::find($template->store_id);
 
@@ -116,10 +119,11 @@ class StrengthSectionController extends Controller
             return $this->sendError("Not Found", "Strength Section Not found", Response::HTTP_NOT_FOUND);
         }
 
-        $template = Template::find($section->template_id);
+
+        $template = TemplateLink::find($section->templateLink_id);
 
         if (!$template) {
-            return $this->sendError("Not Found", "Template Not found", Response::HTTP_NOT_FOUND);
+            return $this->sendError("Not Found", "Template Link Not found", Response::HTTP_NOT_FOUND);
         }
 
         $store = Store::find($template->store_id);
@@ -159,15 +163,17 @@ class StrengthSectionController extends Controller
         if (!$section) {
             return $this->sendError("Not Found", "Strength Section Not found", Response::HTTP_NOT_FOUND);
         }
-        $template = Template::find($section->template_id);
+        $template = TemplateLink::find($section->templateLink_id);
+
         if (!$template) {
-            return $this->sendError("Not Found", "Template Not found", Response::HTTP_NOT_FOUND);
+            return $this->sendError("Not Found", "Template Link Not found", Response::HTTP_NOT_FOUND);
         }
+
         $store = Store::find($template->store_id);
+
         if (!$store) {
             return $this->sendError("Not Found", "Store Not found", Response::HTTP_NOT_FOUND);
         }
-
 
         Gate::authorize('delete-store', $store);
 

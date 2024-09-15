@@ -38,27 +38,26 @@ class StrengthSectionRequest extends FormRequest
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|file|max:10240',
-            'template_id' => [
+            'templateLink_id' => [
                 'required',
                 'string',
                 'max:255',
-                // Rule::unique('strength_section')->where(function ($query) {
-                //     return $query->whereNull('deleted_at');
-                // }),
+                Rule::unique('strength_section')
             ]
         ];
     }
     protected function updateRule(): array
     {
+        $id = $this->route('strength');
         return [
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|file|max:10240',
-            'template_id' => [
+            'templateLink_id' => [
                 'nullable',
                 'string',
                 'max:255',
-
+                Rule::unique('strength_section')->ignore($id)
             ]
         ];
     }

@@ -37,26 +37,25 @@ class ProductSectionRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'template_id' => [
+            'templateLink_id' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('product_section')->where(function ($query) {
-                    return $query->whereNull('deleted_at');
-                }),
+                Rule::unique('product_section')
             ]
         ];
     }
     protected function updateRule(): array
     {
+        $id = $this->route('product');
         return [
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'template_id' => [
+            'templateLink_id' => [
                 'nullable',
                 'string',
                 'max:255',
-
+                Rule::unique('product_section')->ignore($id)
             ]
         ];
     }

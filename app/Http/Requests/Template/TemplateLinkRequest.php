@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Template;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class TemplateCategoryRequest extends FormRequest
+class TemplateLinkRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,10 @@ class TemplateCategoryRequest extends FormRequest
      */
     public function rules(): array
     {
-
         switch ($this->route()->getName()) {
-            case "template.category.add":
+            case "templateLink.add":
                 return $this->addRule();
-            case "template.category.update":
+            case "templateLink.update":
                 return $this->updateRule();
             default:
                 return [];
@@ -41,21 +40,41 @@ class TemplateCategoryRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('template_category')
+                Rule::unique('template_link')
             ],
+            'store_id' => [
+                'required',
+                'string',
+                'max:255',
+                "exists:stores,id"
+            ],
+            'template_id' => [
+                'required',
+                'string',
+                'max:255',
+                "exists:templates,id"
+            ],
+
         ];
     }
     protected function updateRule(): array
     {
 
-        $id =  request()->route("template");
         return [
-            'name' => [
+            'name' => 'nullable|string|max:255',
+            'store_id' => [
                 'nullable',
                 'string',
                 'max:255',
-                Rule::unique('template_category')->ignore($id)
-            ]
+                "exists:stores,id"
+            ],
+            'template_id' => [
+                'nullable',
+                'string',
+                'max:255',
+                "exists:templates,id"
+            ],
+
         ];
     }
 }

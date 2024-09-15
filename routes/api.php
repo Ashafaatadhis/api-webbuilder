@@ -20,10 +20,11 @@ use App\Http\Controllers\Template\Section\StoreLocationSectionController;
 use App\Http\Controllers\Template\Section\StrengthSectionController;
 use App\Http\Controllers\Template\Section\TeamSectionController;
 use App\Http\Controllers\Template\TemplateController;
+use App\Http\Controllers\Template\TemplateLinkController;
 use App\Http\Controllers\TemplateCategoryController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\UserController;
-
+use App\Models\Template\TemplateLink;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -62,6 +63,7 @@ Route::get("template/{id}", [TemplateController::class, "show"]);
 Route::resource("templates", TemplateController::class)->names(["store" => "template.add", "update" => "template.update"])->except(["index", "show"]);
 
 Route::resource("category/templates", TemplateCategoryController::class)->names(["store" => "template.category.add", "update" => "template.category.update"]);
+Route::resource("template-links", TemplateLinkController::class)->names(["store" => "templateLink.add", "update" => "templateLink.update"]);
 
 
 Route::prefix("sections")->group(function () {

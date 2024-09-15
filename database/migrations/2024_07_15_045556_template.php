@@ -11,13 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('certifications', function (Blueprint $table) {
+        Schema::create('templates', function (Blueprint $table) {
             $table->uuid("id")->primary();
-            $table->string("name");
-            $table->string("issuer");
-            $table->string("image");
-            $table->foreignUuid('store_id')->constrained(table: "stores", column: "id")->onDelete("cascade")
+            $table->string("name")->unique();
+            $table->string("image")->nullable();
+
+            $table->foreignUuid('templateCategory_id')->constrained(table: "template_category", column: "id")->onDelete("cascade")
                 ->onUpdate("cascade");
+
+
+
 
             $table->timestamps();
         });
@@ -29,6 +32,6 @@ return new class extends Migration
     public function down(): void
     {
 
-        Schema::dropIfExists('certifications');
+        Schema::dropIfExists('templates');
     }
 };
