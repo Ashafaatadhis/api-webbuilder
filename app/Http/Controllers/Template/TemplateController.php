@@ -23,9 +23,27 @@ class TemplateController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(TemplateRequest $request)
     {
-        $template = Template::with(["strengthSection", "heroSection",  "footerSection", "historySection", "calltoactionSection"])->paginate(10);
+        $slug = $request->route("slug");
+
+        $template = Template::with(["heroAboutUsSection", "productSection", "storeLocationSection", "teamSection", "strengthSection", "heroSection",  "footerSection", "historySection", "calltoactionSection"]);
+        if ($request->has('search')) {
+            $search = $request->query('search');
+            $template->where('name', 'like', '%' . $search . '%'); // Adjust the column name as needed
+        }
+        if ($slug) {
+            $template->where("templateCategory_id", $slug);
+        }
+
+        if ($request->has('paginate')) {
+            $page = $request->query('paginate');
+            if ($page) {
+                $template = $template->paginate(10);
+            }
+        }
+        $template = $template->get();
+
         $template = new TemplateCollection($template);
         return $this->sendResponse($template, "Successfully get All Data");
     }
@@ -70,7 +88,7 @@ class TemplateController extends Controller
     public function show(string $id)
     {
 
-        $template = Template::with(["strengthSection", "heroSection",  "footerSection", "historySection", "calltoactionSection"])->find($id);
+        $template = Template::with(["heroAboutUsSection", "productSection", "storeLocationSection", "teamSection", "strengthSection", "heroSection",  "footerSection", "historySection", "calltoactionSection"])->find($id);
         if (!$template) {
             return $this->sendError("Not Found", "Template Not found", Response::HTTP_NOT_FOUND);
         }

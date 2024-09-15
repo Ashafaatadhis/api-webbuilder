@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid("id")->primary();
             $table->text("content");
             $table->string("author");
-
+            $table->string("image")->nullable();
             $table->foreignUuid('store_id')->constrained(table: "stores", column: "id")->onDelete("cascade")
                 ->onUpdate("cascade");
             $table->softDeletes();

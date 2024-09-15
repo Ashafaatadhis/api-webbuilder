@@ -36,10 +36,13 @@ class HistorySectionRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
-            'image' => 'required|file|max:255',
+            'paragraph1' => 'nullable|string',
+            'paragraph2' => 'nullable|string',
+            'image' => 'nullable|file|max:10240',
             'template_id' => [
-                'required', 'string', 'max:255',
+                'required',
+                'string',
+                'max:255',
                 Rule::unique('history_section')->where(function ($query) {
                     return $query->whereNull('deleted_at');
                 }),
@@ -49,11 +52,14 @@ class HistorySectionRequest extends FormRequest
     protected function updateRule(): array
     {
         return [
-            'name' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:255',
-            'image' => 'nullable|file|max:255',
+            'title' => 'nullable|string|max:255',
+            'paragraph1' => 'nullable|string',
+            'paragraph2' => 'nullable|string',
+            'image' => 'nullable|file|max:10240',
             'template_id' => [
-                'nullable', 'string', 'max:255',
+                'nullable',
+                'string',
+                'max:255',
 
             ]
         ];

@@ -7,14 +7,15 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class ProductImage extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasUuids;
     protected $table = "product_image";
     protected $fillable = [
-        "url", "product_id"
+        "url",
+        "product_id"
     ];
 
     public function product(): BelongsTo

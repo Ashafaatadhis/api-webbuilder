@@ -9,7 +9,7 @@ use App\Http\Resources\TestimonialCollection;
 use App\Models\Store\Store;
 use App\Models\Testimonial;
 use Illuminate\Http\Response;
-
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
 
 
@@ -51,7 +51,13 @@ class TestimonialController extends Controller
         }
 
         Gate::authorize('create-store', $store);
-        $testimonial = Testimonial::create($request->all());
+        $result = $this->uploadSingle($request, "testimonial", 'image');
+
+        $data = $request->all();
+
+        $data['image'] = $result->getPathname();
+
+        $testimonial = Testimonial::create($data);
 
 
         $data = new TestimonialCollection(collect($testimonial));
@@ -100,8 +106,17 @@ class TestimonialController extends Controller
         Gate::authorize('update-store', $store);
 
 
+        $data = $request->all();
 
-        $testimonial = $testimonial->update($request->all());
+        if ($request->hasFile('image')) {
+            $result = $this->uploadSingle($request, "testimonial", 'image');
+            File::delete($testimonial->image);
+            $data['image'] = $result->getPathname();
+        } else {
+            $data['image'] = $testimonial->image;
+        }
+
+        $testimonial = $testimonial->update($data);
         if (!$testimonial) {
             return $this->sendError("Bad Request", "Failed Update Data", Response::HTTP_BAD_REQUEST);
         }
@@ -132,6 +147,7 @@ class TestimonialController extends Controller
         if (!$testimonial->delete()) {
             return $this->sendError("Bad Request", "Failed Delete Data", Response::HTTP_BAD_REQUEST);
         }
+        File::delete($testimonial->image);
 
         return $this->sendResponse(message: "Successfully deleted Data!");
     }

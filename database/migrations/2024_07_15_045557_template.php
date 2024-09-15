@@ -16,7 +16,11 @@ return new class extends Migration
             $table->string("name");
             $table->foreignUuid('store_id')->constrained(table: "stores", column: "id")->onDelete("cascade")
                 ->onUpdate("cascade");
-            $table->unique(array("store_id", "deleted_at"));
+            $table->foreignUuid('templateCategory_id')->constrained(table: "template_category", column: "id")->onDelete("cascade")
+                ->onUpdate("cascade");
+
+            $table->unique(array("templateCategory_id", "deleted_at"));
+            $table->unique(array("store_id", "deleted_at", "name"));
             $table->softDeletes();
             $table->timestamps();
         });

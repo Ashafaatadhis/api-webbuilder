@@ -39,7 +39,7 @@ class StoreRequest extends FormRequest
             'instagram' => "string|nullable",
             'facebook' => "string|nullable",
             'whatsapp' => "string|nullable",
-            'location' => 'required|string|max:255',
+            'location' => 'required|string',
             'logo' => 'required|file|max:5120',
 
         ];
@@ -52,7 +52,7 @@ class StoreRequest extends FormRequest
             'instagram' => "string|nullable",
             'facebook' => "string|nullable",
             'whatsapp' => "string|nullable",
-            'location' => 'string|nullable|max:255',
+            'location' => 'string|nullable',
             'logo' => 'file|nullable|max:5120',
         ];
     }

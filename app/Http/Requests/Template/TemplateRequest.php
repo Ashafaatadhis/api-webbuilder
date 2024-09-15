@@ -35,22 +35,36 @@ class TemplateRequest extends FormRequest
     protected function addRule(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('templates')->where(function ($query) {
+                    return $query->whereNull('deleted_at');
+                })
+            ],
             'store_id' => [
-                'required', 'string', 'max:255',
+                'required',
+                'string',
+                'max:255',
                 Rule::unique('templates')->where(function ($query) {
                     return $query->whereNull('deleted_at');
                 }),
-            ]
+            ],
+            'templateCategory_id' =>   'required|string|exists:template_category,id|max:255',
         ];
     }
     protected function updateRule(): array
     {
+        $id =  request()->route("template");
         return [
             'name' => 'nullable|string|max:255',
             'store_id' => [
-                'nullable', 'string', 'max:255',
-            ]
+                'nullable',
+                'string',
+                'max:255',
+            ],
+            'templateCategory_id' =>   'nullable|string|exists:template_category,id|max:255',
         ];
     }
 }

@@ -36,6 +36,7 @@ class TestimonialRequest extends FormRequest
         return [
             'content' => 'required|string|max:255',
             'author' => 'required|string',
+            'image' => 'nullable|file|max:10240',
             'store_id' => 'required|string|exists:stores,id|max:255',
         ];
     }
@@ -43,6 +44,7 @@ class TestimonialRequest extends FormRequest
     {
         return [
             'content' => 'nullable|string|max:255',
+            'image' => 'nullable|file|max:10240',
             'author' => 'nullable|string',
             'store_id' => 'nullable|string|exists:stores,id|max:255',
         ];

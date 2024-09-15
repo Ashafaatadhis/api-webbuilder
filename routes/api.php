@@ -13,12 +13,17 @@ use App\Http\Controllers\Store\Image\StoreImageController;
 use App\Http\Controllers\Store\StoreController;
 use App\Http\Controllers\Template\Section\CalltoactionSectionController;
 use App\Http\Controllers\Template\Section\FooterSectionController;
+use App\Http\Controllers\Template\Section\HeroAboutUsSectionController;
 use App\Http\Controllers\Template\Section\HistorySectionController;
+use App\Http\Controllers\Template\Section\ProductSectionController;
+use App\Http\Controllers\Template\Section\StoreLocationSectionController;
 use App\Http\Controllers\Template\Section\StrengthSectionController;
+use App\Http\Controllers\Template\Section\TeamSectionController;
 use App\Http\Controllers\Template\TemplateController;
+use App\Http\Controllers\TemplateCategoryController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\UserController;
-use App\Models\Template\Section\StrengthSection;
+
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -51,7 +56,12 @@ Route::resource("users", UserController::class)->names(["update" => "user.update
 Route::resource("employees", EmployeeController::class)->names(["store" => "employee.add", "update" => "employee.update"]);
 Route::resource("testimonials", TestimonialController::class)->names(["store" => "testimonial.add", "update" => "testimonial.update"]);
 Route::resource("certifications", CertificationController::class)->names(["store" => "certification.add", "update" => "certification.update"]);
-Route::resource("templates", TemplateController::class)->names(["store" => "template.add", "update" => "template.update"]);
+
+Route::get("templates/{slug?}", [TemplateController::class, "index"]);
+Route::get("template/{id}", [TemplateController::class, "show"]);
+Route::resource("templates", TemplateController::class)->names(["store" => "template.add", "update" => "template.update"])->except(["index", "show"]);
+
+Route::resource("category/templates", TemplateCategoryController::class)->names(["store" => "template.category.add", "update" => "template.category.update"]);
 
 
 Route::prefix("sections")->group(function () {
@@ -60,6 +70,10 @@ Route::prefix("sections")->group(function () {
     Route::resource("calltoaction", CalltoactionSectionController::class)->names(["store" => "template.section.calltoaction.add", "update" => "template.section.calltoaction.update"]);
     Route::resource("strength", StrengthSectionController::class)->names(["store" => "template.section.strength.add", "update" => "template.section.strength.update"]);
     Route::resource("history", HistorySectionController::class)->names(["store" => "template.section.history.add", "update" => "template.section.history.update"]);
+    Route::resource("heroAboutUs", HeroAboutUsSectionController::class)->names(["store" => "template.section.heroAboutUs.add", "update" => "template.section.heroAboutUs.update"]);
+    Route::resource("product", ProductSectionController::class)->names(["store" => "template.section.product.add", "update" => "template.section.product.update"]);
+    Route::resource("storeLocation", StoreLocationSectionController::class)->names(["store" => "template.section.storeLocation.add", "update" => "template.section.storeLocation.update"]);
+    Route::resource("team", TeamSectionController::class)->names(["store" => "template.section.team.add", "update" => "template.section.team.update"]);
 });
 
 Route::prefix("stores")->group(function () {

@@ -31,8 +31,9 @@ class EmployeeRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
+            'image' => 'nullable|file|max:10240',
             "level" => "required|integer|between:1,5",
-            'image' => 'file|required|max:5120',
+
             'store_id' => 'required|string|exists:stores,id|max:255',
         ];
     }
@@ -41,7 +42,7 @@ class EmployeeRequest extends FormRequest
         return [
             'name' => 'nullable|string|max:255',
             'position' => 'nullable|string|max:255',
-            'image' => 'file|nullable|max:5120',
+            'image' => 'nullable|file|max:10240',
             "level" => "nullable|integer|between:1,5",
             'store_id' => 'nullable|string|exists:stores,id|max:255',
         ];

@@ -59,11 +59,17 @@ class HistorySectionController extends Controller
 
         Gate::authorize('create-store', $store);
         //  unique store_id
-        $result = $this->uploadSingle($request, "section", 'image');
-
         $data = $request->all();
+        if ($request->hasFile('image')) {
 
-        $data['image'] = $result->getPathname();
+            $result = $this->uploadSingle($request, "section", 'image');
+
+            $data = $request->all();
+
+            $data['image'] = $result->getPathname();
+        }
+
+
         $section = HistorySection::create($data);
 
         // dd(is_array($request->file('file')) ? count($request->file('file')) : $request->file('file'));

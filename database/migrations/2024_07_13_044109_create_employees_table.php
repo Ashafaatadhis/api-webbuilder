@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->uuid("id")->primary();
             $table->string("name");
+
             $table->string("position");
             $table->integer("level");
             $table->foreignUuid('store_id')->constrained(table: "stores", column: "id")->onDelete("cascade")

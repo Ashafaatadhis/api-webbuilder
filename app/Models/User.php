@@ -8,7 +8,7 @@ use App\Models\Store\Store;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
+
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -16,7 +16,7 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasUuids;
+    use HasApiTokens, HasFactory, Notifiable,   HasUuids;
     protected $dates = ['deleted_at'];
     /**
      * The attributes that are mass assignable.
@@ -40,6 +40,11 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'remember_token',
     ];
+
+    public function isAdministrator(): bool
+    {
+        return $this->role == "administrator";
+    }
 
     /**
      * Get the attributes that should be cast.

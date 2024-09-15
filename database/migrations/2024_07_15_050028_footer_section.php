@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('footer_section', function (Blueprint $table) {
             $table->uuid("id")->primary();
-            $table->string("title");
+            $table->string("title")->nullable();
             $table->text("description")->nullable();
             $table->foreignUuid('template_id')->constrained(table: "templates", column: "id")->onDelete("cascade")
                 ->onUpdate("cascade");

@@ -5,19 +5,25 @@ namespace App\Models\Template;
 use App\Models\Store\Store;
 use App\Models\Template\Section\CalltoactionSection;
 use App\Models\Template\Section\FooterSection;
+use App\Models\Template\Section\HeroAboutUsSection;
 use App\Models\Template\Section\HeroSection;
 use App\Models\Template\Section\HistorySection;
+use App\Models\Template\Section\ProductSection;
+use App\Models\Template\Section\StoreLocationSection;
 use App\Models\Template\Section\StrengthSection;
+use App\Models\Template\Section\TeamSection;
+use App\Models\templateCategory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class Template extends Model
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasUuids;
     protected $guarded = [
         "id"
     ];
@@ -26,10 +32,14 @@ class Template extends Model
     {
         return $this->belongsTo(Store::class);
     }
-
-    public function strengthSection(): HasOne
+    public function templateCategory(): BelongsTo
     {
-        return $this->hasOne(StrengthSection::class);
+        return $this->belongsTo(templateCategory::class);
+    }
+
+    public function strengthSection(): HasMany
+    {
+        return $this->hasMany(StrengthSection::class);
     }
     public function historySection(): HasOne
     {
@@ -46,5 +56,21 @@ class Template extends Model
     public function footerSection(): HasOne
     {
         return $this->hasOne(FooterSection::class);
+    }
+    public function heroAboutUsSection(): HasOne
+    {
+        return $this->hasOne(HeroAboutUsSection::class);
+    }
+    public function productSection(): HasOne
+    {
+        return $this->hasOne(ProductSection::class);
+    }
+    public function storeLocationSection(): HasOne
+    {
+        return $this->hasOne(StoreLocationSection::class);
+    }
+    public function teamSection(): HasOne
+    {
+        return $this->hasOne(TeamSection::class);
     }
 }

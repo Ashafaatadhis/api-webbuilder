@@ -59,11 +59,11 @@ class FooterSectionController extends Controller
 
         Gate::authorize('create-store', $store);
         //  unique store_id
-        $result = $this->uploadSingle($request, "section", 'image');
+
 
         $data = $request->all();
 
-        $data['image'] = $result->getPathname();
+
         $section = FooterSection::create($data);
 
         // dd(is_array($request->file('file')) ? count($request->file('file')) : $request->file('file'));
@@ -126,13 +126,6 @@ class FooterSectionController extends Controller
         Gate::authorize('update-store', $store);
         $data = $request->all();
 
-        if ($request->hasFile('image')) {
-            $result = $this->uploadSingle($request, "section", 'image');
-            File::delete($section->image);
-            $data['image'] = $result->getPathname();
-        } else {
-            $data['image'] = $section->image;
-        }
 
 
         $section = $section->update($data);

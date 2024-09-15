@@ -29,9 +29,18 @@ class StoreController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(StoreRequest $request)
     {
-        $store = Store::with(["storeImages", "template", "products", "certifications", "testimonials", "employees"])->paginate(10);
+        $store = Store::with(["storeImages", "template", "products", "products.productImages", "certifications", "testimonials", "employees" => function ($query) {
+            $query->orderBy('level', 'asc');
+        }]);
+        if ($request->has('search')) {
+            $search = $request->query('search');
+            $store->where('name', 'like', '%' . $search . '%')->orWhereHas('products', function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            }); // Adjust the column name as needed
+        }
+        $store = $store->paginate(10);
         $data = new StoreCollection($store);
         return $this->sendResponse(message: "Successfully get All Data", data: $data);
     }
@@ -78,7 +87,9 @@ class StoreController extends Controller
     public function show(string $id)
     {
 
-        $store = Store::with(["storeImages", "template", "products", "certifications", "testimonials", "employees"])->find($id);
+        $store = Store::with(["storeImages", "template", "products.productImages", "certifications", "testimonials", "employees" => function ($query) {
+            $query->orderBy('level', 'asc');
+        }])->find($id);
         if (!$store) {
             return $this->sendError("Not Found", "Store Not found", Response::HTTP_NOT_FOUND);
         }
