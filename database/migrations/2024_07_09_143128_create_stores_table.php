@@ -20,8 +20,11 @@ return new class extends Migration
             $table->string("facebook")->nullable();
             $table->string("whatsapp")->nullable();
             $table->string("logo");
-            $table->string("location");
+            $table->text("gmaps");
+            $table->text("location");
             $table->foreignUuid('user_id')->constrained(table: "users", column: "id")->onDelete("cascade")
+                ->onUpdate("cascade");
+            $table->foreignUuid('storeCategory_id')->constrained(table: "store_category", column: "id")->onDelete("cascade")
                 ->onUpdate("cascade");
 
             $table->timestamps();

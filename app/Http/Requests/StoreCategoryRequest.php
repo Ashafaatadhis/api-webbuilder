@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class TemplateCategoryRequest extends FormRequest
+class StoreCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,9 @@ class TemplateCategoryRequest extends FormRequest
     {
 
         switch ($this->route()->getName()) {
-            case "template.category.add":
+            case "store.category.add":
                 return $this->addRule();
-            case "template.category.update":
+            case "store.category.update":
                 return $this->updateRule();
             default:
                 return [];
@@ -41,20 +41,20 @@ class TemplateCategoryRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('template_category')
+                Rule::unique('store_category')
             ],
         ];
     }
     protected function updateRule(): array
     {
 
-        $id =  request()->route("templates");
+        $id =  request()->route("stores");
         return [
             'name' => [
                 'nullable',
                 'string',
                 'max:255',
-                Rule::unique('template_category')->ignore($id)
+                Rule::unique('store_category')->ignore($id)
             ]
         ];
     }

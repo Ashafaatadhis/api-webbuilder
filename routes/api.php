@@ -11,6 +11,7 @@ use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Store\Image\StoreImageController;
 use App\Http\Controllers\Store\StoreController;
+use App\Http\Controllers\StoreCategoryController;
 use App\Http\Controllers\Template\Section\CalltoactionSectionController;
 use App\Http\Controllers\Template\Section\FooterSectionController;
 use App\Http\Controllers\Template\Section\HeroAboutUsSectionController;
@@ -63,6 +64,7 @@ Route::get("template/{id}", [TemplateController::class, "show"]);
 Route::resource("templates", TemplateController::class)->names(["store" => "template.add", "update" => "template.update"])->except(["index", "show"]);
 
 Route::resource("category/templates", TemplateCategoryController::class)->names(["store" => "template.category.add", "update" => "template.category.update"]);
+Route::resource("category/stores", StoreCategoryController::class)->names(["store" => "store.category.add", "update" => "store.category.update"]);
 Route::resource("template-links", TemplateLinkController::class)->names(["store" => "templateLink.add", "update" => "templateLink.update"]);
 
 

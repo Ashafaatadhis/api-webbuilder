@@ -11,14 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('storelocation_section', function (Blueprint $table) {
+        Schema::create('store_category', function (Blueprint $table) {
             $table->uuid("id")->primary();
-            $table->text("title");
-            $table->text("description")->nullable();
-
-            $table->foreignUuid('templateLink_id')->unique()->constrained(table: "template_link", column: "id")->onDelete("cascade")
-                ->onUpdate("cascade");
-
+            $table->string("name")->unique();
+            $table->string("slug")->unique();
             $table->timestamps();
         });
     }
@@ -28,7 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-
-        Schema::dropIfExists('storelocation_section');
+        Schema::dropIfExists('store_category');
     }
 };
