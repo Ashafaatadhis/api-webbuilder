@@ -35,7 +35,7 @@ use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 // })->middleware('auth:sanctum');
 
 Route::get("hello", function () {
-    return ["message" => "Halo dek saja lah"];
+    return ["message" => "Halo dek saja lah 222"];
 });
 
 Route::get("administrator/stores",  [AdminStoreController::class, "index"]);
