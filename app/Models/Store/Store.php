@@ -6,6 +6,7 @@ use App\Models\Certification;
 use App\Models\Employee;
 use App\Models\Product\Product;
 use App\Models\Store\Image\StoreImage;
+use App\Models\StoreCategory;
 use App\Models\Template\Template;
 use App\Models\Template\TemplateLink;
 use App\Models\Testimonial;
@@ -35,6 +36,10 @@ class Store extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+    public function template(): BelongsTo
+    {
+        return $this->belongsTo(StoreCategory::class);
     }
 
     public function testimonials(): HasMany

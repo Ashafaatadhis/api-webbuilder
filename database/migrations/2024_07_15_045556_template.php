@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('templates', function (Blueprint $table) {
             $table->uuid("id")->primary();
             $table->string("name")->unique();
+            $table->string("link")->unique();
             $table->string("image")->nullable();
 
             $table->foreignUuid('templateCategory_id')->constrained(table: "template_category", column: "id")->onDelete("cascade")

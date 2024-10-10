@@ -28,9 +28,29 @@ class ProductImageController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ProductImageRequest $request)
     {
-        $product = ProductImage::paginate(10);
+        $limit = $request->query('limit', 10);
+        $product = new ProductImage();
+
+        if ($request->has('productId')) {
+            $productId = $request->query('productId');
+
+            $product = $product->where('product_id',  $productId);
+        }
+
+        if ($request->has('paginate')) {
+            $page = $request->query('paginate');
+            if ($page  === "true") {
+                $product = $product->paginate($limit);
+            } else {
+                $product = $product->get();
+            }
+        } else {
+            $product = $product->get();
+        }
+
+
         $product = new ProductImageCollection($product);
         return $this->sendResponse($product, "Successfully get All Data");
     }
@@ -134,7 +154,7 @@ class ProductImageController extends Controller
         $result = $this->uploadSingle($request, "product", 'file');
         File::delete($image->url);
 
-        $listfile = ProductImage::query()->update(["url" => $result->getPathname()]);
+        $listfile = ProductImage::where('id', $id)->update(["url" => $result->getPathname()]);
 
         if (!$listfile) {
             return $this->sendError("Bad Request", "Failed Update Data", Response::HTTP_BAD_REQUEST);

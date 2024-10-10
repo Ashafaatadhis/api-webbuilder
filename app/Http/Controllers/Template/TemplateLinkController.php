@@ -27,7 +27,7 @@ class TemplateLinkController extends Controller
      */
     public function index(TemplateLinkRequest $request)
     {
-
+        $limit = $request->query('limit', 10);
         $template = TemplateLink::with(["heroAboutUsSection", "productSection", "storeLocationSection", "teamSection", "strengthSection", "heroSection",  "footerSection", "historySection", "calltoactionSection"]);
         if ($request->has('search')) {
             $search = $request->query('search');
@@ -40,12 +40,14 @@ class TemplateLinkController extends Controller
 
         if ($request->has('paginate')) {
             $page = $request->query('paginate');
-            if ($page) {
-                $template = $template->paginate(10);
+            if ($page  === "true") {
+                $template = $template->paginate($limit);
+            } else {
+                $template = $template->get();
             }
+        } else {
+            $template = $template->get();
         }
-        $template = $template->get();
-
         $template = new TemplateCollection($template);
         return $this->sendResponse($template, "Successfully get All Data");
     }

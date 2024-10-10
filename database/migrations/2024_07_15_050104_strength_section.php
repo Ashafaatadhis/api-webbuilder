@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string("title");
             $table->text("description")->nullable();
             $table->string("image")->nullable();
-            $table->foreignUuid('templateLink_id')->unique()->constrained(table: "template_link", column: "id")->onDelete("cascade")
+            $table->foreignUuid('templateLink_id')->constrained(table: "template_link", column: "id")->onDelete("cascade")
                 ->onUpdate("cascade");
 
             $table->timestamps();

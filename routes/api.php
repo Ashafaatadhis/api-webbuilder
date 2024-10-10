@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminStoreController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CertificationController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OwnerStoreController;
 use App\Http\Controllers\Template\Section\HeroSectionController;
@@ -27,13 +28,14 @@ use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\UserController;
 use App\Models\Template\TemplateLink;
 use Illuminate\Support\Facades\Route;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
 Route::get("hello", function () {
-    return ["message" => "Halo dek"];
+    return ["message" => "Halo dek 22"];
 });
 
 Route::get("administrator/stores",  [AdminStoreController::class, "index"]);
@@ -52,6 +54,9 @@ Route::controller(AuthController::class)->prefix("auth")->group(function () {
     Route::get('me', "me")->name("auth.me");
     Route::delete('logout', "logout")->name("auth.logout");
 });
+
+// Dashboard Info count
+Route::get('dashboard', [DashboardController::class, "index"]);
 
 // Route::resource("stores", StoreController::class)->names(["store" => "store.add", "update" => "store.update"]);
 Route::resource("users", UserController::class)->names(["update" => "user.update"]);
@@ -79,6 +84,9 @@ Route::prefix("sections")->group(function () {
     Route::resource("storeLocation", StoreLocationSectionController::class)->names(["store" => "template.section.storeLocation.add", "update" => "template.section.storeLocation.update"]);
     Route::resource("team", TeamSectionController::class)->names(["store" => "template.section.team.add", "update" => "template.section.team.update"]);
 });
+
+// mystore
+Route::get("mystores", [StoreController::class, "getAllMyStores"]);
 
 Route::prefix("stores")->group(function () {
     Route::resource("image", StoreImageController::class)->names(["store" => "store.image.add", "update" => "store.image.update"]);

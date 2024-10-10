@@ -42,13 +42,13 @@ class StrengthSectionRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('strength_section')
+
             ]
         ];
     }
     protected function updateRule(): array
     {
-        $id = $this->route('strength');
+
         return [
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
@@ -57,7 +57,7 @@ class StrengthSectionRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:255',
-                Rule::unique('strength_section')->ignore($id)
+
             ]
         ];
     }

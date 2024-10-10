@@ -28,9 +28,38 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ProductRequest $request)
     {
-        $product = Product::with(["productImages"])->paginate(10);
+        $limit = $request->query('limit', 10);
+        $product = Product::with(["productImages"]);
+
+
+        if ($request->has('storeId')) {
+            $storeId = $request->query('storeId');
+
+            $product = $product->where('store_id',  $storeId);
+        }
+
+        if ($request->has('storeOwnerId')) {
+            $storeOwnerId = $request->query('storeOwnerId');
+            $product = $product->orWhereHas('store', function ($query) use ($storeOwnerId) {
+                $query->where('user_id', $storeOwnerId);
+            });
+        }
+
+
+
+        if ($request->has('paginate')) {
+            $page = $request->query('paginate');
+            if ($page  === "true") {
+                $product = $product->paginate($limit);
+            } else {
+                $product = $product->get();
+            }
+        } else {
+            $product = $product->get();
+        }
+
         $product = new ProductCollection($product);
         return $this->sendResponse($product, "Successfully get All Data");
     }

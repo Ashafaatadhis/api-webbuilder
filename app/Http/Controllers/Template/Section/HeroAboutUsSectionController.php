@@ -25,9 +25,10 @@ class HeroAboutUsSectionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(HeroAboutUsSectionRequest $request)
     {
-        $section = HeroAboutUsSection::paginate(10);
+        $limit = $request->query('limit', 10);
+        $section = HeroAboutUsSection::paginate($limit);
         $section = new SectionCollection($section);
         return $this->sendResponse($section, "Successfully get All Data");
     }

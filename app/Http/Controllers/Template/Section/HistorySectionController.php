@@ -23,9 +23,10 @@ class HistorySectionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(HistorySectionRequest $request)
     {
-        $section = HistorySection::paginate(10);
+        $limit = $request->query('limit', 10);
+        $section = HistorySection::paginate($limit);
         $section = new SectionCollection($section);
         return $this->sendResponse($section, "Successfully get All Data");
     }

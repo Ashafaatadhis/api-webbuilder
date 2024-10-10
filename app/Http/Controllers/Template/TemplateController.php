@@ -8,6 +8,7 @@ use App\Http\Resources\Template\TemplateCollection;
 
 use App\Models\Template\Template;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
 class TemplateController extends Controller
@@ -25,12 +26,25 @@ class TemplateController extends Controller
     public function index(TemplateRequest $request)
     {
         $categoryId = $request->route("slug");
-
+        $limit = $request->query('limit', 10);
         $template = Template::with(["templateCategory"]);
         if ($request->has('search')) {
             $search = $request->query('search');
             $template->where('name', 'like', '%' . $search . '%'); // Adjust the column name as needed
+            $template->orWhere('link', 'like', '%' . $search . '%'); // Adjust the column name as needed
             $template->orWhere("templateCategory_id", $search);
+        }
+        if ($request->has('filter')) {
+            $filter = $request->query('filter');
+            if ($filter === "newest") {
+                $template = $template->latest();
+            } elseif ($filter === "most-used") {
+                $template = $template->withCount('templateLinks')->orderBy('template_links_count', 'desc');
+            }
+        }
+        if ($request->has('category')) {
+            $category = $request->query('category');
+            $template->orWhere("templateCategory_id", $category);
         }
         if ($categoryId) {
             $template->where("templateCategory_id", $categoryId);
@@ -38,11 +52,15 @@ class TemplateController extends Controller
 
         if ($request->has('paginate')) {
             $page = $request->query('paginate');
-            if ($page) {
-                $template = $template->paginate(10);
+            if ($page === "true") {
+                $template = $template->paginate($limit);
+            } else {
+                $template = $template->get();
             }
+        } else {
+            $template = $template->get();
         }
-        $template = $template->get();
+
 
         $template = new TemplateCollection($template);
         return $this->sendResponse($template, "Successfully get All Data");

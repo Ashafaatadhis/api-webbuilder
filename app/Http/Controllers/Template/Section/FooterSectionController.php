@@ -23,9 +23,10 @@ class FooterSectionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(FooterSectionRequest $request)
     {
-        $section = FooterSection::paginate(10);
+        $limit = $request->query('limit', 10);
+        $section = FooterSection::paginate($limit);
         $section = new SectionCollection($section);
         return $this->sendResponse($section, "Successfully get All Data");
     }

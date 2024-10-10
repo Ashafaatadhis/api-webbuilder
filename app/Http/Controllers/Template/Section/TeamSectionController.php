@@ -23,9 +23,10 @@ class TeamSectionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(TeamSectionRequest $request)
     {
-        $section = TeamSection::paginate(10);
+        $limit = $request->query('limit', 10);
+        $section = TeamSection::paginate($limit);
         $section = new SectionCollection($section);
         return $this->sendResponse($section, "Successfully get All Data");
     }

@@ -41,6 +41,12 @@ class TemplateRequest extends FormRequest
                 'max:255',
                 "unique:templates,name"
             ],
+            'link' => [
+                'required',
+                'string',
+                'max:255',
+                "unique:templates,link"
+            ],
             'image' => 'required|file|max:10240',
             'templateCategory_id' =>   'required|string|exists:template_category,id|max:255',
         ];
@@ -48,10 +54,13 @@ class TemplateRequest extends FormRequest
     protected function updateRule(): array
     {
 
+        $id = $this->route('template');
+
         return [
-            'name' => 'nullable|string|max:255|unique:templates,name',
+            'name' => ["nullable", "string", "max:255", Rule::unique('templates')->ignore($id)],
+            'link' => ["nullable", "string", "max:255", Rule::unique('templates')->ignore($id)],
             'image' => 'nullable|file|max:10240',
-            'templateCategory_id' =>   'nullable|string|exists:template_category,id|max:255',
+            'templateCategory_id' => 'nullable|string|exists:template_category,id|max:255',
         ];
     }
 }
