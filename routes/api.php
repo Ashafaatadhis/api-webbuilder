@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Route;
 // })->middleware('auth:sanctum');
 
 Route::get("hello", function () {
-    return ["message" => "Halo dek"];
+    return ["message" => "Halo dek saja lah"];
 });
 
 Route::get("administrator/stores",  [AdminStoreController::class, "index"]);
