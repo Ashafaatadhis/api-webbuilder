@@ -37,9 +37,9 @@ jobs:
         script: |
           cd ~/apps/api-webbuilder
           git pull origin main
-          composer install --no-interaction --prefer-dist --optimize-autoloader
+          composer install
           php artisan migrate
           php artisan config:cache
           php artisan route:cache
           php artisan view:cache
-          pm2 restart laravel-app
+          pm2 restart webbuilder-app
