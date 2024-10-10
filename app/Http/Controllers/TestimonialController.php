@@ -23,9 +23,29 @@ class TestimonialController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(TestimonialRequest $request)
     {
-        $testimonial = Testimonial::paginate(10);
+        $limit = $request->query('limit', 10);
+        $testimonial = new Testimonial();
+        if ($request->has('storeId')) {
+            $storeId = $request->query('storeId');
+
+            $testimonial = $testimonial->where('store_id',  $storeId);
+        }
+
+
+        if ($request->has('paginate')) {
+            $page = $request->query('paginate');
+            if ($page  === "true") {
+                $testimonial = $testimonial->paginate($limit);
+            } else {
+                $testimonial = $testimonial->get();
+            }
+        } else {
+            $testimonial = $testimonial->get();
+        }
+
+
         $testimonial = new TestimonialCollection($testimonial);
         return $this->sendResponse($testimonial, "Successfully get All Data");
     }

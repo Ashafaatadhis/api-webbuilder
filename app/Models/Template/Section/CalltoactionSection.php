@@ -3,7 +3,8 @@
 namespace App\Models\Template\Section;
 
 
-use App\Models\Template\Template;
+
+use App\Models\Template\TemplateLink;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,8 +20,8 @@ class CalltoactionSection extends Model
     ];
 
 
-    public function template(): BelongsTo
+    public function templateLink(): BelongsTo
     {
-        return $this->belongsTo(Template::class);
+        return $this->belongsTo(TemplateLink::class);
     }
 }

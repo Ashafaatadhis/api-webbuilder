@@ -17,10 +17,9 @@ return new class extends Migration
             $table->text("paragraph1")->nullable();
             $table->text("paragraph2")->nullable();
             $table->string("image")->nullable();
-            $table->foreignUuid('template_id')->constrained(table: "templates", column: "id")->onDelete("cascade")
+            $table->foreignUuid('templateLink_id')->unique()->constrained(table: "template_link", column: "id")->onDelete("cascade")
                 ->onUpdate("cascade");
-            $table->unique(array("template_id", "deleted_at"));
-            $table->softDeletes();
+
             $table->timestamps();
         });
     }
@@ -30,9 +29,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('history_section', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
+
         Schema::dropIfExists('history_section');
     }
 };

@@ -20,9 +20,16 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(UserRequest $request)
     {
-        $user = User::where("role", "store_owner")->paginate(10);
+        $limit = $request->query('limit', 10);
+        $withAdmin = $request->query('withAdmin', false);
+        if ($withAdmin) {
+            $user = User::paginate($limit);
+        } else {
+            $user = User::where("role", "store_owner")->paginate($limit);
+        }
+
         $user = new UserCollection($user);
         return $this->sendResponse($user, "Successfully get All Data");
     }
@@ -48,7 +55,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = User::where("role", "store_owner")->find($id);
+        $user = User::find($id);
         if (!$user) {
             return $this->sendError("Not Found", "User Not found", Response::HTTP_NOT_FOUND);
         }
@@ -69,7 +76,7 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, string $id)
     {
-        $user = User::where("role", "store_owner")->find($id);
+        $user = User::find($id);
 
         if (!$user) {
             return $this->sendError("Not Found", "User Not found", Response::HTTP_NOT_FOUND);
@@ -103,7 +110,7 @@ class UserController extends Controller
     public function destroy(string $id)
     {
 
-        $user = User::where("role", "store_owner")->find($id);
+        $user = User::find($id);
 
         if (!$user) {
             return $this->sendError("Not Found", "User Not found", Response::HTTP_NOT_FOUND);

@@ -26,6 +26,7 @@ class TemplateCategoryController extends Controller
      */
     public function index(TemplateCategoryRequest $request)
     {
+        $limit = $request->query('limit', 10);
         $templateCategory = new TemplateCategory();
 
         if ($request->has('sort')) {
@@ -36,7 +37,18 @@ class TemplateCategoryController extends Controller
             }
         }
 
-        $templateCategory = $templateCategory->paginate(10);
+        if ($request->has('paginate')) {
+            $page = $request->query('paginate');
+            if ($page === "true") {
+                $templateCategory = $templateCategory->paginate($limit);
+            } else {
+                $templateCategory = $templateCategory->get();
+            }
+        } else {
+            $templateCategory = $templateCategory->get();
+        }
+
+
         $templateCategory = new TemplateCategoryCollection(collect($templateCategory));
         return $this->sendResponse($templateCategory, "Successfully get All Data");
     }

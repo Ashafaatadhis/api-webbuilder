@@ -30,9 +30,27 @@ class StoreImageController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(StoreImageRequest $request)
     {
-        $store = StoreImage::paginate(10);
+        $limit = $request->query('limit', 10);
+        $store = new StoreImage();
+        if ($request->has('storeId')) {
+            $storeId = $request->query('storeId');
+
+            $store = $store->where('store_id',  $storeId);
+        }
+        if ($request->has('paginate')) {
+            $page = $request->query('paginate');
+            if ($page  === "true") {
+                $store = $store->paginate($limit);
+            } else {
+                $store = $store->get();
+            }
+        } else {
+            $store = $store->get();
+        }
+
+
         $store = new StoreImageCollection($store);
         return $this->sendResponse($store, "Successfully get All Data");
     }
@@ -131,7 +149,7 @@ class StoreImageController extends Controller
         $result = $this->uploadSingle($request, "store", 'file');
         File::delete($image->url);
 
-        $listfile = StoreImage::query()->update(["url" => $result->getPathname()]);
+        $listfile = StoreImage::where('id', $id)->update(["url" => $result->getPathname()]);
 
         if (!$listfile) {
             return $this->sendError("Bad Request", "Failed Update Data", Response::HTTP_BAD_REQUEST);

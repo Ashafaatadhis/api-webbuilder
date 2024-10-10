@@ -35,7 +35,7 @@ class UserRequest extends FormRequest
         return [
             'username' => 'nullable|string|max:255',
             'email' => 'nullable|string|unique:users,email|email|max:255',
-            'role' => 'nullable|string|in:administration,store_owner|max:255',
+            'role' => 'nullable|string|in:administrator,store_owner|max:255',
             'image' => 'nullable|file|max:5120',
             'password' => 'nullable|string|max:255',
         ];

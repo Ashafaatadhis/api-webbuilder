@@ -40,7 +40,9 @@ class StoreRequest extends FormRequest
             'facebook' => "string|nullable",
             'whatsapp' => "string|nullable",
             'location' => 'required|string',
+            'gmaps' => 'required|string',
             'logo' => 'required|file|max:5120',
+            'storeCategory_id' =>   'required|string|exists:store_category,id|max:255',
 
         ];
     }
@@ -52,8 +54,10 @@ class StoreRequest extends FormRequest
             'instagram' => "string|nullable",
             'facebook' => "string|nullable",
             'whatsapp' => "string|nullable",
-            'location' => 'string|nullable',
+            'location' => 'nullable|string',
+            'gmaps' => 'nullable|string',
             'logo' => 'file|nullable|max:5120',
+            'storeCategory_id' =>   'nullable|string|exists:store_category,id|max:255',
         ];
     }
 }

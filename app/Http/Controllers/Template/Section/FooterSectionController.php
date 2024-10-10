@@ -8,6 +8,7 @@ use App\Http\Resources\Template\SectionCollection;
 use App\Models\Store\Store;
 use App\Models\Template\Section\FooterSection;
 use App\Models\Template\Template;
+use App\Models\Template\TemplateLink;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
@@ -22,9 +23,10 @@ class FooterSectionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(FooterSectionRequest $request)
     {
-        $section = FooterSection::paginate(10);
+        $limit = $request->query('limit', 10);
+        $section = FooterSection::paginate($limit);
         $section = new SectionCollection($section);
         return $this->sendResponse($section, "Successfully get All Data");
     }
@@ -44,12 +46,13 @@ class FooterSectionController extends Controller
     {
 
 
-
-        $template = Template::find($request->template_id);
+        $template = TemplateLink::find($request->templateLink_id);
 
         if (!$template) {
-            return $this->sendError("Not Found", "Template Not found", Response::HTTP_NOT_FOUND);
+            return $this->sendError("Not Found", "Template Link Not found", Response::HTTP_NOT_FOUND);
         }
+
+
 
         $store = Store::find($template->store_id);
 
@@ -111,10 +114,10 @@ class FooterSectionController extends Controller
             return $this->sendError("Not Found", "Footer Section Not found", Response::HTTP_NOT_FOUND);
         }
 
-        $template = Template::find($section->template_id);
+        $template = TemplateLink::find($section->templateLink_id);
 
         if (!$template) {
-            return $this->sendError("Not Found", "Template Not found", Response::HTTP_NOT_FOUND);
+            return $this->sendError("Not Found", "Template Link Not found", Response::HTTP_NOT_FOUND);
         }
 
         $store = Store::find($template->store_id);
@@ -147,11 +150,14 @@ class FooterSectionController extends Controller
         if (!$section) {
             return $this->sendError("Not Found", "Footer Section Not found", Response::HTTP_NOT_FOUND);
         }
-        $template = Template::find($section->template_id);
+        $template = TemplateLink::find($section->templateLink_id);
+
         if (!$template) {
-            return $this->sendError("Not Found", "Template Not found", Response::HTTP_NOT_FOUND);
+            return $this->sendError("Not Found", "Template Link Not found", Response::HTTP_NOT_FOUND);
         }
+
         $store = Store::find($template->store_id);
+
         if (!$store) {
             return $this->sendError("Not Found", "Store Not found", Response::HTTP_NOT_FOUND);
         }
