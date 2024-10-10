@@ -5,12 +5,11 @@ namespace App\Http\Controllers\Template;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Template\TemplateRequest;
 use App\Http\Resources\Template\TemplateCollection;
-use App\Models\Store\Store;
+
 use App\Models\Template\Template;
 use Illuminate\Http\Response;
-
-use Illuminate\Support\Facades\Gate;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class TemplateController extends Controller
 {
@@ -18,6 +17,7 @@ class TemplateController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ["index", 'show']]);
+        $this->middleware('role:administrator', ['except' => ["index", 'show']]);
     }
 
     /**
@@ -25,24 +25,42 @@ class TemplateController extends Controller
      */
     public function index(TemplateRequest $request)
     {
-        $slug = $request->route("slug");
-
-        $template = Template::with(["heroAboutUsSection", "productSection", "storeLocationSection", "teamSection", "strengthSection", "heroSection",  "footerSection", "historySection", "calltoactionSection"]);
+        $categoryId = $request->route("slug");
+        $limit = $request->query('limit', 10);
+        $template = Template::with(["templateCategory"]);
         if ($request->has('search')) {
             $search = $request->query('search');
             $template->where('name', 'like', '%' . $search . '%'); // Adjust the column name as needed
+            $template->orWhere('link', 'like', '%' . $search . '%'); // Adjust the column name as needed
+            $template->orWhere("templateCategory_id", $search);
         }
-        if ($slug) {
-            $template->where("templateCategory_id", $slug);
+        if ($request->has('filter')) {
+            $filter = $request->query('filter');
+            if ($filter === "newest") {
+                $template = $template->latest();
+            } elseif ($filter === "most-used") {
+                $template = $template->withCount('templateLinks')->orderBy('template_links_count', 'desc');
+            }
+        }
+        if ($request->has('category')) {
+            $category = $request->query('category');
+            $template->orWhere("templateCategory_id", $category);
+        }
+        if ($categoryId) {
+            $template->where("templateCategory_id", $categoryId);
         }
 
         if ($request->has('paginate')) {
             $page = $request->query('paginate');
-            if ($page) {
-                $template = $template->paginate(10);
+            if ($page === "true") {
+                $template = $template->paginate($limit);
+            } else {
+                $template = $template->get();
             }
+        } else {
+            $template = $template->get();
         }
-        $template = $template->get();
+
 
         $template = new TemplateCollection($template);
         return $this->sendResponse($template, "Successfully get All Data");
@@ -62,21 +80,19 @@ class TemplateController extends Controller
     public function store(TemplateRequest $request)
     {
 
-        $store = Store::find($request->store_id);
+        $result = $this->uploadSingle($request, "template", 'image');
 
-        if (!$store) {
-            return $this->sendError("Not Found", "Store Not found", Response::HTTP_NOT_FOUND);
-        }
+        $data = $request->all();
 
-        Gate::authorize('create-store', $store);
-        //  unique store_id
+        $data['image'] = $result->getPathname();
 
-        $template = Template::create($request->all());
+        $template = Template::create($data);
 
         // dd(is_array($request->file('file')) ? count($request->file('file')) : $request->file('file'));
         // $listUpload = $this->uploadMulti($request, $product);
 
         // $product->image = $listUpload;
+
 
         $data = new TemplateCollection(collect($template));
         return $this->sendResponse(data: $data, message: "Successfully create new Data!");
@@ -88,7 +104,7 @@ class TemplateController extends Controller
     public function show(string $id)
     {
 
-        $template = Template::with(["heroAboutUsSection", "productSection", "storeLocationSection", "teamSection", "strengthSection", "heroSection",  "footerSection", "historySection", "calltoactionSection"])->find($id);
+        $template = Template::with(["templateCategory"])->find($id);
         if (!$template) {
             return $this->sendError("Not Found", "Template Not found", Response::HTTP_NOT_FOUND);
         }
@@ -118,18 +134,17 @@ class TemplateController extends Controller
         if (!$template) {
             return $this->sendError("Not Found", "Template Not found", Response::HTTP_NOT_FOUND);
         }
+        $data = $request->all();
 
-        $store = Store::find($template->store_id);
-
-        if (!$store) {
-            return $this->sendError("Not Found", "Store Not found", Response::HTTP_NOT_FOUND);
+        if ($request->hasFile('image')) {
+            $result = $this->uploadSingle($request, "template", 'image');
+            File::delete($template->image);
+            $data['image'] = $result->getPathname();
+        } else {
+            $data['image'] = $template->image;
         }
 
-        Gate::authorize('update-store', $store);
-
-
-
-        $template = $template->update($request->all());
+        $template = $template->update($data);
         if (!$template) {
             return $this->sendError("Bad Request", "Failed Update Data", Response::HTTP_BAD_REQUEST);
         }
@@ -148,17 +163,13 @@ class TemplateController extends Controller
         if (!$template) {
             return $this->sendError("Not Found", "Template Not found", Response::HTTP_NOT_FOUND);
         }
-        $store = Store::find($template->store_id);
-        if (!$store) {
-            return $this->sendError("Not Found", "Store Not found", Response::HTTP_NOT_FOUND);
-        }
 
-
-        Gate::authorize('delete-store', $store);
 
         if (!$template->delete()) {
             return $this->sendError("Bad Request", "Failed Delete Data", Response::HTTP_BAD_REQUEST);
         }
+
+        File::delete($template->image);
 
         return $this->sendResponse(message: "Successfully deleted Data!");
     }

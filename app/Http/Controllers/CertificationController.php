@@ -22,9 +22,29 @@ class CertificationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(CertificationRequest $request)
     {
-        $certification = Certification::paginate(10);
+        $limit = $request->query('limit', 10);
+        $certification =  new Certification();
+
+        if ($request->has('storeId')) {
+            $storeId = $request->query('storeId');
+
+            $certification = $certification->where('store_id',  $storeId);
+        }
+
+
+        if ($request->has('paginate')) {
+            $page = $request->query('paginate');
+            if ($page  === "true") {
+                $certification = $certification->paginate($limit);
+            } else {
+                $certification = $certification->get();
+            }
+        } else {
+            $certification = $certification->get();
+        }
+
         $certification = new CertificationCollection($certification);
         return $this->sendResponse($certification, "Successfully get All Data");
     }

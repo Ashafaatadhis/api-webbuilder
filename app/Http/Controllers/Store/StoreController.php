@@ -16,6 +16,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class StoreController extends Controller
@@ -26,21 +27,52 @@ class StoreController extends Controller
         $this->middleware('auth:api', ['except' => ["index", 'show']]);
     }
 
+    public function getAllMyStores()
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+
+        $store = Store::with(["storeImages", "template", "templateLink", "products", "products.productImages", "certifications", "testimonials", "employees" => function ($query) {
+            $query->orderBy('level', 'asc');
+        }]);
+
+        $store = $store->where("user_id", $user->id)->get();
+
+        // $store = $store->paginate(10);
+        $data = new StoreCollection($store);
+        return $this->sendResponse(message: "Successfully get All Data", data: $data);
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(StoreRequest $request)
     {
-        $store = Store::with(["storeImages", "template", "products", "products.productImages", "certifications", "testimonials", "employees" => function ($query) {
+        $store = Store::with(["storeImages", "templateLink", "products", "products.productImages", "certifications", "testimonials", "employees" => function ($query) {
             $query->orderBy('level', 'asc');
         }]);
+        $limit = $request->query('limit', 10);
         if ($request->has('search')) {
             $search = $request->query('search');
             $store->where('name', 'like', '%' . $search . '%')->orWhereHas('products', function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%');
             }); // Adjust the column name as needed
         }
-        $store = $store->paginate(10);
+        if ($request->has('category')) {
+            $category = $request->query('category');
+            $store->orWhere("storeCategory_id", $category);
+        }
+        if ($request->has('paginate')) {
+            $page = $request->query('paginate');
+            if ($page  === "true") {
+                $store = $store->paginate($limit);
+            } else {
+                $store = $store->get();
+            }
+        } else {
+            $store = $store->get();
+        }
+
+
         $data = new StoreCollection($store);
         return $this->sendResponse(message: "Successfully get All Data", data: $data);
     }
@@ -87,7 +119,7 @@ class StoreController extends Controller
     public function show(string $id)
     {
 
-        $store = Store::with(["storeImages", "template", "products.productImages", "certifications", "testimonials", "employees" => function ($query) {
+        $store = Store::with(["storeImages", "templateLink", "products.productImages", "certifications", "testimonials", "employees" => function ($query) {
             $query->orderBy('level', 'asc');
         }])->find($id);
         if (!$store) {
@@ -136,7 +168,7 @@ class StoreController extends Controller
             $data['logo'] = $store->logo;
         }
 
-        $data["user_id"] = $user->id;
+        // $data["user_id"] = $user->id;
 
         // if want slug regenerate after update
         // $store->slug = null;

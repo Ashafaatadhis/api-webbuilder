@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminStoreController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CertificationController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OwnerStoreController;
 use App\Http\Controllers\Template\Section\HeroSectionController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Store\Image\StoreImageController;
 use App\Http\Controllers\Store\StoreController;
+use App\Http\Controllers\StoreCategoryController;
 use App\Http\Controllers\Template\Section\CalltoactionSectionController;
 use App\Http\Controllers\Template\Section\FooterSectionController;
 use App\Http\Controllers\Template\Section\HeroAboutUsSectionController;
@@ -20,11 +22,13 @@ use App\Http\Controllers\Template\Section\StoreLocationSectionController;
 use App\Http\Controllers\Template\Section\StrengthSectionController;
 use App\Http\Controllers\Template\Section\TeamSectionController;
 use App\Http\Controllers\Template\TemplateController;
+use App\Http\Controllers\Template\TemplateLinkController;
 use App\Http\Controllers\TemplateCategoryController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\UserController;
-
+use App\Models\Template\TemplateLink;
 use Illuminate\Support\Facades\Route;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -51,6 +55,9 @@ Route::controller(AuthController::class)->prefix("auth")->group(function () {
     Route::delete('logout', "logout")->name("auth.logout");
 });
 
+// Dashboard Info count
+Route::get('dashboard', [DashboardController::class, "index"]);
+
 // Route::resource("stores", StoreController::class)->names(["store" => "store.add", "update" => "store.update"]);
 Route::resource("users", UserController::class)->names(["update" => "user.update"]);
 Route::resource("employees", EmployeeController::class)->names(["store" => "employee.add", "update" => "employee.update"]);
@@ -62,6 +69,8 @@ Route::get("template/{id}", [TemplateController::class, "show"]);
 Route::resource("templates", TemplateController::class)->names(["store" => "template.add", "update" => "template.update"])->except(["index", "show"]);
 
 Route::resource("category/templates", TemplateCategoryController::class)->names(["store" => "template.category.add", "update" => "template.category.update"]);
+Route::resource("category/stores", StoreCategoryController::class)->names(["store" => "store.category.add", "update" => "store.category.update"]);
+Route::resource("template-links", TemplateLinkController::class)->names(["store" => "templateLink.add", "update" => "templateLink.update"]);
 
 
 Route::prefix("sections")->group(function () {
@@ -75,6 +84,9 @@ Route::prefix("sections")->group(function () {
     Route::resource("storeLocation", StoreLocationSectionController::class)->names(["store" => "template.section.storeLocation.add", "update" => "template.section.storeLocation.update"]);
     Route::resource("team", TeamSectionController::class)->names(["store" => "template.section.team.add", "update" => "template.section.team.update"]);
 });
+
+// mystore
+Route::get("mystores", [StoreController::class, "getAllMyStores"]);
 
 Route::prefix("stores")->group(function () {
     Route::resource("image", StoreImageController::class)->names(["store" => "store.image.add", "update" => "store.image.update"]);

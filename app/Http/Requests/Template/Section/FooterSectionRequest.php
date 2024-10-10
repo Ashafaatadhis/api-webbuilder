@@ -37,26 +37,27 @@ class FooterSectionRequest extends FormRequest
         return [
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'template_id' => [
+            'templateLink_id' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('footer_section')->where(function ($query) {
-                    return $query->whereNull('deleted_at');
-                }),
+                Rule::unique('footer_section')
             ]
         ];
     }
     protected function updateRule(): array
     {
+        $id = $this->route('footer');
+
+
         return [
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'template_id' => [
+            'templateLink_id' => [
                 'nullable',
                 'string',
                 'max:255',
-
+                Rule::unique('footer_section')->ignore($id)
             ]
         ];
     }

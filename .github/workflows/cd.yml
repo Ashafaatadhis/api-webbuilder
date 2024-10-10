@@ -1,0 +1,45 @@
+name: CD
+
+on: 
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+
+    - name: Install Composer dependencies
+      run: composer install --no-interaction --prefer-dist --optimize-autoloader
+      
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      
+    - name: Generate application key
+      run: php artisan key:generate
+
+    - name: Deploy using SSH
+      uses: appleboy/ssh-action@v1.1.0
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        port: 22
+        script: |
+          cd ~/apps/api-webbuilder
+          git pull origin main
+          composer install
+          php artisan migrate
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          pm2 restart webbuilder-app

@@ -21,16 +21,43 @@ class EmployeeController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ["except" => "show"]);
-        $this->middleware('role:store_owner', ["except" => "show"]);
+        $this->middleware('auth:api', ["except" => "show", "index"]);
+        // $this->middleware('role:store_owner', ["except" => "show"]);
     }
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(EmployeeRequest $request)
     {
-        $employee = Employee::orderBy('level', 'asc')->paginate(10);
+        $limit = $request->query('limit', 10);
+        $employee = Employee::orderBy('level', 'asc');
+
+        if ($request->has('storeId')) {
+            $storeId = $request->query('storeId');
+
+            $employee = $employee->where('store_id',  $storeId);
+        }
+
+
+        if ($request->has('storeOwnerId')) {
+            $storeOwnerId = $request->query('storeOwnerId');
+            $employee = $employee->orWhereHas('store', function ($query) use ($storeOwnerId) {
+                $query->where('user_id', $storeOwnerId);
+            });
+        }
+
+        if ($request->has('paginate')) {
+            $page = $request->query('paginate');
+            if ($page  === "true") {
+                $employee = $employee->paginate($limit);
+            } else {
+                $employee = $employee->get();
+            }
+        } else {
+            $employee = $employee->get();
+        }
+
         $employee = new EmployeeCollection($employee);
         return $this->sendResponse($employee, "Successfully get All Data");
     }

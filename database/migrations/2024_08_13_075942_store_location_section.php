@@ -13,13 +13,12 @@ return new class extends Migration
     {
         Schema::create('storelocation_section', function (Blueprint $table) {
             $table->uuid("id")->primary();
-            $table->string("title");
+            $table->text("title");
             $table->text("description")->nullable();
 
-            $table->foreignUuid('template_id')->constrained(table: "templates", column: "id")->onDelete("cascade")
+            $table->foreignUuid('templateLink_id')->unique()->constrained(table: "template_link", column: "id")->onDelete("cascade")
                 ->onUpdate("cascade");
-            $table->unique(array("template_id", "deleted_at"));
-            $table->softDeletes();
+
             $table->timestamps();
         });
     }
@@ -29,9 +28,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('storelocation_section', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
+
         Schema::dropIfExists('storelocation_section');
     }
 };

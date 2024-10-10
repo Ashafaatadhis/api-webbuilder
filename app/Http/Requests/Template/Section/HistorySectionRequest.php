@@ -39,28 +39,27 @@ class HistorySectionRequest extends FormRequest
             'paragraph1' => 'nullable|string',
             'paragraph2' => 'nullable|string',
             'image' => 'nullable|file|max:10240',
-            'template_id' => [
+            'templateLink_id' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('history_section')->where(function ($query) {
-                    return $query->whereNull('deleted_at');
-                }),
+                Rule::unique('history_section')
             ]
         ];
     }
     protected function updateRule(): array
     {
+        $id = $this->route('history');
         return [
             'title' => 'nullable|string|max:255',
             'paragraph1' => 'nullable|string',
             'paragraph2' => 'nullable|string',
             'image' => 'nullable|file|max:10240',
-            'template_id' => [
+            'templateLink_id' => [
                 'nullable',
                 'string',
                 'max:255',
-
+                Rule::unique('history_section')->ignore($id)
             ]
         ];
     }

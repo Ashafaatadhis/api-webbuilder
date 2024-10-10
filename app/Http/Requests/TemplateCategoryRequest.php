@@ -41,24 +41,20 @@ class TemplateCategoryRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('template_category')->where(function ($query) {
-                    return $query->whereNull('deleted_at');
-                }),
+                Rule::unique('template_category')
             ],
         ];
     }
     protected function updateRule(): array
     {
 
-        $id =  request()->route("template");
+        $id =  request()->route("templates");
         return [
             'name' => [
                 'nullable',
                 'string',
                 'max:255',
-                Rule::unique('template_category')->ignore($id)->where(function ($query) {
-                    return $query->whereNull('deleted_at');
-                }),
+                Rule::unique('template_category')->ignore($id)
             ]
         ];
     }
